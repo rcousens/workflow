@@ -1,0 +1,31 @@
+{
+  "name": "rcousens/workflow",
+  "type": "library",
+  "description": "Workflow Engine",
+  "keywords": ["workflow"],
+  "homepage": "http://www.rosscousens.com/workflow",
+  "license": "MIT",
+  "authors": [
+    {"name": "Ross Cousens", "email": "contact@hatesmail.com"}
+  ],
+  "require": {
+    "php": ">=5.5"
+  },
+  "require-dev": {
+    "mockery/mockery": "~0.9",
+    "phpunit/phpunit": "~4.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Ross\\Workflow\\Tests\\": "tests/"
+    }
+  },
+  "archive": {
+    "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar"]
+  }
+}
