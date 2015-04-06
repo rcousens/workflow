@@ -48,6 +48,6 @@ class WorkflowEngine
         do  {
             $sequence->proceed();
         } while($sequence->getCurrentProcess() !== null);
-        
+
     }
 }
