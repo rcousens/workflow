@@ -11,6 +11,7 @@ namespace Ross\Workflow\Engine;
 
 use Ross\Workflow\Process\Connector\XorMergeConnector;
 use Ross\Workflow\Process\Connector\XorSplitConnector;
+use Ross\Workflow\Process\Event\End\EndEvent;
 use Ross\Workflow\Process\Event\Generic\GenericEvent;
 use Ross\Workflow\Process\Event\Start\StartEvent;
 use Ross\Workflow\Process\Task\Generic\GenericTask;
@@ -32,6 +33,8 @@ class WorkflowEngine
         $approvalDraftTaskOutcome = new XorSplitConnector("Draft Approval Outcome");
         $draftApprovedEvent = new GenericEvent("Draft Approved Event");
         $draftDeclinedEvent = new GenericEvent("Draft Declined Event");
+        $draftApprovedTask = new GenericTask("Draft Completed");
+        $endEvent = new EndEvent("Workflow Ended");
 
         $sequence->connectProcesses($startEvent, $approvalTask);
         $sequence->connectProcesses($approvalTask, $approvalEvent);
@@ -43,6 +46,8 @@ class WorkflowEngine
         $sequence->connectProcesses($approvalDraftTaskOutcome, $draftApprovedEvent);
         $sequence->connectProcesses($approvalDraftTaskOutcome, $draftDeclinedEvent);
         $sequence->connectProcesses($draftDeclinedEvent, $approvalDraftTaskPrecursor);
+        $sequence->connectProcesses($draftApprovedEvent, $draftApprovedTask);
+        $sequence->connectProcesses($draftApprovedTask, $endEvent);
 
         $sequence->start("Redpen Submitted");
         do  {
