@@ -23,7 +23,9 @@ abstract class AbstractTask extends AbstractProcess implements TaskInterface, Pr
     {
         error_log("Executed task {$this->name}");
 
-        return $this->linkCollection->getOutgoing()->getTo();
+        if (count($this->linkCollection->getOutgoing())) {
+            return $this->linkCollection->getOutgoing()[0]->getTo();
+        }
     }
 
 }

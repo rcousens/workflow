@@ -22,4 +22,9 @@ abstract class AbstractProcess implements ProcessInterface
     {
         return $this->name;
     }
+
+    public function getLinkCollection()
+    {
+        return $this->linkCollection;
+    }
 }

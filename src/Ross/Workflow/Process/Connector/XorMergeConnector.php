@@ -29,7 +29,9 @@ class XorMergeConnector extends AbstractConnector
     {
         $this->trigger($fromProcess);
         if ($this->hasMetCondition()) {
-            return $this->linkCollection->getOutgoing()->getTo();
+            if (count($this->linkCollection->getOutgoing())){
+                return $this->linkCollection->getOutgoing()[0]->getTo();
+            }
         }
 
         return $this;

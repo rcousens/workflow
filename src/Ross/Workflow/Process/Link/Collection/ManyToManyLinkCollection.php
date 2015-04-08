@@ -10,26 +10,14 @@ namespace Ross\Workflow\Process\Link\Collection;
 
 
 use Ross\Workflow\Process\Link\Link;
-use Ross\Workflow\Process\ProcessInterface;
 
 class ManyToManyLinkCollection extends AbstractLinkCollection
 {
-    public function __construct(ProcessInterface $owner, $links = [])
-    {
-        $this->owner = $owner;
-
-        foreach ($links as $link) {
-            if ($link instanceof Link) {
-                $this->addLink($link);
-            }
-        }
-    }
-
     public function addLink(Link $link)
     {
-        if ($link->getTo() === $this->owner && ! in_array($link, $this->incoming)) {
+        if ($link->getTo() === $this->owner && ! $this->hasIncoming($link)) {
             $this->incoming[] = $link;
-        } elseif ($link->getFrom() === $this->owner && ! in_array($link, $this->outgoing)) {
+        } elseif ($link->getFrom() === $this->owner && ! $this->hasOutgoing($link)) {
             $this->outgoing[] = $link;
         }
     }

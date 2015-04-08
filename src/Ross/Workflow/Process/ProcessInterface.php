@@ -18,4 +18,6 @@ interface ProcessInterface
     public function connect(Link $link);
 
     public function getName();
+
+    public function getLinkCollection();
 }

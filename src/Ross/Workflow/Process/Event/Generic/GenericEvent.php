@@ -41,11 +41,11 @@ class GenericEvent extends AbstractEvent
     public function fire()
     {
         error_log("Event fired: {$this->getName()}");
-        if (! $this->linkCollection->getOutgoing()) {
-            return null;
+        if (count($this->linkCollection->getOutgoing())) {
+            return $this->linkCollection->getOutgoing()[0]->getTo();
         }
 
-        return $this->linkCollection->getOutgoing()->getTo();
+
     }
 
 }

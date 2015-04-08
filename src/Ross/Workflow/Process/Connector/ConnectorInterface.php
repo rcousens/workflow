@@ -10,7 +10,7 @@ namespace Ross\Workflow\Process\Connector;
 
 use Ross\Workflow\Process\ProcessInterface;
 
-interface ConnectorInterface
+interface ConnectorInterface extends ProcessInterface
 {
     public function activate(ProcessInterface $process);
 

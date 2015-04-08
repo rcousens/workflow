@@ -9,11 +9,24 @@
 namespace Ross\Workflow\Process\Link\Collection;
 
 
+use Ross\Workflow\Process\Link\Link;
+use Ross\Workflow\Process\ProcessInterface;
+
 abstract class AbstractLinkCollection implements LinkCollectionInterface
 {
     protected $incoming = [];
     protected $outgoing = [];
 
+    public function __construct(ProcessInterface $owner, $links = [])
+    {
+        $this->owner = $owner;
+
+        foreach ($links as $link) {
+            if ($link instanceof Link) {
+                $this->addLink($link);
+            }
+        }
+    }
     public function getIncoming()
     {
         return $this->incoming;
@@ -24,8 +37,13 @@ abstract class AbstractLinkCollection implements LinkCollectionInterface
         return $this->outgoing;
     }
 
-    public function hasLink($link)
+    public function hasIncoming(Link $link)
     {
-        return in_array($link, array_merge($this->incoming, $this->outgoing));
+       return in_array($link, $this->incoming);
+    }
+
+    public function hasOutgoing(Link $link)
+    {
+        return in_array($link, $this->outgoing);
     }
 }

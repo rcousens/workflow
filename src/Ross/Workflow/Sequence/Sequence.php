@@ -15,6 +15,7 @@ use Ross\Workflow\Process\Event\EventInterface;
 use Ross\Workflow\Process\Event\Start\StartEvent;
 use Ross\Workflow\Process\Link\Link;
 use Ross\Workflow\Process\ProcessInterface;
+use Ross\Workflow\Process\Rule\Process\ProcessRuleEngine;
 use Ross\Workflow\Process\Task\TaskInterface;
 
 class Sequence
@@ -24,6 +25,12 @@ class Sequence
     protected $processes = [];
     protected $currentProcess = null;
     protected $previousProcess = null;
+    protected $processRuleEngine = null;
+
+    public function __construct()
+    {
+        $this->processRuleEngine = new ProcessRuleEngine();
+    }
 
     public function start($name)
     {
@@ -36,7 +43,9 @@ class Sequence
     public function connectProcesses(ProcessInterface $fromProcess, ProcessInterface $toProcess)
     {
         $link = new Link($fromProcess, $toProcess);
+        $this->processRuleEngine->validate($fromProcess, $link);
         $fromProcess->connect($link);
+        $this->processRuleEngine->validate($toProcess, $link);
         $toProcess->connect($link);
 
         if ($toProcess instanceof EndEvent) {
@@ -50,8 +59,21 @@ class Sequence
 
     public function proceed()
     {
+        error_log("proceed");
         if (null === $this->currentProcess) {
-//            error_log("Sequence completed");
+            error_log("Sequence completed");
+            return;
+        }
+
+        if (is_array($this->currentProcess)) {
+            error_log("Handling array response");
+            if (count($this->currentProcess) === 1) {
+                error_log("Selecting only outcome: {$this->currentProcess->getName()}");
+                $this->setCurrentProcess($this->currentProcess[0]->getTo());
+            } elseif (count($this->currentProcess) > 1) {
+                $this->setCurrentProcess($this->currentProcess[rand(0, count($this->currentProcess) - 1)]->getTo());
+                error_log("Selecting random outcome: {$this->currentProcess->getName()}");
+            }
             return;
         }
 
@@ -73,17 +95,6 @@ class Sequence
         if ($this->currentProcess instanceof ConnectorInterface) {
             error_log("Activating connector");
             $this->setCurrentProcess($this->currentProcess->activate($this->previousProcess));
-            return;
-        }
-        if (is_array($this->currentProcess)) {
-            error_log("Handling array response");
-            if (count($this->currentProcess) === 1) {
-                $this->setCurrentProcess($this->currentProcess[0]->getTo());
-                error_log("Selecting only outcome: {$this->currentProcess->getName()}");
-            } elseif (count($this->currentProcess) > 1) {
-                $this->setCurrentProcess($this->currentProcess[rand(0, count($this->currentProcess) - 1)]->getTo());
-                error_log("Selecting random outcome: {$this->currentProcess->getName()}");
-            }
             return;
         }
 

@@ -31,25 +31,19 @@ class StartEvent extends AbstractEvent
     public function fire()
     {
         $this->trigger();
-        return $this->linkCollection->getOutgoing()->getTo();
+        if (count($this->linkCollection->getOutgoing())) {
+            return $this->linkCollection->getOutgoing()[0]->getTo();
+        }
     }
 
     public function connect(Link $link)
     {
-        if ($this->linkCollection->hasLink($link)) {
-            return;
-        }
-
-        if ($this->linkCollection->getOutgoing() instanceof Link) {
+        if (count($this->linkCollection->getOutgoing())) {
             throw new InvalidLinkException("Start event {$this->getName()} already has outgoing link");
         }
 
         if (! $link->getFrom() === $this) {
             throw new InvalidLinkException("Start event {$this->getName()} must be set as from side of link");
-        }
-
-        if ($link->getFrom() === $this && $link->getTo() instanceof EventInterface) {
-            throw new InvalidLinkException("Start event {$this->getName()} cannot be connected to other events");
         }
 
         $this->linkCollection->addLink($link);
